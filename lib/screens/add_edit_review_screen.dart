@@ -40,7 +40,7 @@ State<AddEditReviewScreen> {
       success = await _apiService.addReview(widget.username, title, rating, comment);
     } else {
       // Edit review
-      success = await _apiService.updateReview(widget.review!['_id'], title, rating, comment); 
+      success = await _apiService.updateReview(widget.review!['_id'],widget.username, title, rating, comment); // penambahan variabel username
     }
     if (success) {
       Navigator.pop(context, true); // Berhasil, kembali ke layar sebelumnya

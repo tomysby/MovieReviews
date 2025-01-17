@@ -67,12 +67,12 @@ class ApiService {
     }
   }
 
-    Future<bool> updateReview(String id, String title, int rating, String comment) async { 
+    Future<bool> updateReview(String id, String username, String title, int rating, String comment) async {  //penambahan variabel username
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/reviews/$id'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'title': title, 'rating': rating, 'comment': comment}),
+        body: jsonEncode({'username': username,'title': title, 'rating': rating, 'comment': comment}),
       );
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
