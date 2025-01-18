@@ -3,7 +3,7 @@ import 'package:http/http.dart' as
 http;
 class ApiService {
   static const String baseUrl =
-'https://crudcrud.com/api/0b9bfecfa5c948bfae39dd14f6cadbd8';
+'https://crudcrud.com/api/d20bd8719d4741b88a021fef89b45daf';
   Future<bool> registerUser(String username, String password) async {
     try {
       final response = await http.post(
@@ -53,12 +53,12 @@ class ApiService {
       return [];
     }
   }
-  Future<bool> addReview(String username, String title, int rating, String comment) async {
+  Future<bool> addReview(String username, String title, int rating, String comment, String imageUrl) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/reviews'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username, 'title': title, 'rating': rating, 'comment': comment}),
+        body: jsonEncode({'username': username, 'title': title, 'rating': rating, 'comment': comment, 'imageUrl': imageUrl, 'isLiked': false}),
       );
       return response.statusCode == 201;
     } catch (e) {
@@ -67,12 +67,12 @@ class ApiService {
     }
   }
 
-    Future<bool> updateReview(String id, String username, String title, int rating, String comment) async {  //penambahan variabel username
+    Future<bool> updateReview(String id, String username, String title, int rating, String comment, String imageUrl, bool isLiked) async {  //penambahan variabel username
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/reviews/$id'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username,'title': title, 'rating': rating, 'comment': comment}),
+        body: jsonEncode({'username': username,'title': title, 'rating': rating, 'comment': comment, 'imageUrl': imageUrl, 'isLiked': isLiked}),
       );
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
