@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../api_service.dart';
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -13,7 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final usernameExists = await _apiService.checkUsernameExists(_usernameController.text);
     if (usernameExists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Username sudah terdaftar. Silakan gunakan yang lain.')),
+        const SnackBar(content: Text('Username sudah terdaftar. Silakan gunakan yang lain.')),
       );
       return;
     }
@@ -24,21 +26,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registrasi berhasil! Silakan login.')),
+        const SnackBar(content: Text('Registrasi berhasil! Silakan login.')),
       );
       _usernameController.clear();
       _passwordController.clear();
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registrasi gagal. Silakan coba lagi.')),
+        const SnackBar(content: Text('Registrasi gagal. Silakan coba lagi.')),
       );
     }
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -46,17 +48,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _register,
-              child: Text('Register'),
+              child: const Text('Register'),
             ),
           ],
         ),

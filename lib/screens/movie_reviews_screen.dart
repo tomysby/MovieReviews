@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../api_service.dart';
 import 'add_edit_review_screen.dart';
@@ -5,7 +7,7 @@ import 'add_edit_review_screen.dart';
 class MovieReviewsScreen extends StatefulWidget {
   final String username;
 
-  const MovieReviewsScreen({Key? key, required this.username}) : super(key: key);
+  const MovieReviewsScreen({super.key, required this.username});
 
   @override
   _MovieReviewsScreenState createState() => _MovieReviewsScreenState();
@@ -14,7 +16,7 @@ class MovieReviewsScreen extends StatefulWidget {
 class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
   final _apiService = ApiService();
   List<dynamic> _reviews = [];
-  bool _isLoading = false; // Tambahkan indikator loading
+  bool _isLoading = false; // Indikator loading
 
   @override
   void initState() {
@@ -43,9 +45,17 @@ class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
     }
   }
 
-  Future<void> _toggleLike(String id, bool isCurrentlyLiked, String title, int rating, String comment, String imageUrl) async {
+  Future<void> _toggleLike(String id, bool isCurrentlyLiked, String title, int rating, String comment, String? imageBase64) async {
     try {
-      final success = await _apiService.updateReview(id, widget.username, title, rating, comment, imageUrl, !isCurrentlyLiked);
+      final success = await _apiService.updateReview(
+        id,
+        widget.username,
+        title,
+        rating,
+        comment,
+        imageBase64,
+        !isCurrentlyLiked,
+      );
       if (success) {
         setState(() {
           _reviews = _reviews.map((review) {
@@ -73,7 +83,7 @@ class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
         _loadReviews();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menghapus review')),
+          const SnackBar(content: Text('Gagal menghapus review')),
         );
       }
     } catch (e) {
@@ -87,10 +97,10 @@ class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Review Film Saya'),
+        title: const Text('Review Film Saya'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () async {
               final result = await Navigator.push(
                 context,
@@ -104,25 +114,35 @@ class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator()) // Indikator loading
+          ? const Center(child: CircularProgressIndicator()) // Indikator loading
           : _reviews.isEmpty
-              ? Center(child: Text('Belum ada review. Tambahkan sekarang!'))
+              ? const Center(child: Text('Belum ada review. Tambahkan sekarang!'))
               : ListView.builder(
                   itemCount: _reviews.length,
                   itemBuilder: (context, index) {
                     final review = _reviews[index];
+                    Uint8List? imageBytes;
+
+                    // Decode Base64 jika ada gambar
+                    if (review['imageBase64'] != null) {
+                      try {
+                        imageBytes = base64Decode(review['imageBase64']);
+                      } catch (e) {
+                        imageBytes = null;
+                      }
+                    }
+
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                       child: ListTile(
-                        leading: review['imageUrl'] != null && review['imageUrl'].isNotEmpty
-                            ? Image.network(
-                                review['imageUrl'],
+                        leading: imageBytes != null
+                            ? Image.memory(
+                                imageBytes,
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image),
                               )
-                            : CircleAvatar(
+                            : const CircleAvatar(
                                 child: Icon(Icons.movie),
                               ),
                         title: Text(review['title'] ?? 'Judul tidak tersedia'),
@@ -147,11 +167,11 @@ class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
                                 review['title'] ?? '',
                                 review['rating'] ?? 0,
                                 review['comment'] ?? '',
-                                review['imageUrl'] ?? '',
+                                review['imageBase64'],
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                               onPressed: () async {
                                 final result = await Navigator.push(
                                   context,
@@ -166,7 +186,7 @@ class _MovieReviewsScreenState extends State<MovieReviewsScreen> {
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: () => _deleteReview(review['_id']),
                             ),
                           ],
